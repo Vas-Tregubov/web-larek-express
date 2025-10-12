@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import connectDB from './config/db';
+import productRoutes from './routes/product';
 
 dotenv.config();
 
@@ -21,5 +22,7 @@ connectDB().catch((error) => {
   console.error('MongoDB connection failed:', error);
   process.exit(1);
 });
+
+app.use('/product', productRoutes);
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
