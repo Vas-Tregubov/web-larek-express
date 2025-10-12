@@ -2,10 +2,13 @@ import { Request, Response } from 'express';
 import Product, { IProductDocument } from '../models/Product';
 import { IProduct } from '../types/product';
 
-export const getAllProducts = async (res: Response) => {
+export const getAllProducts = async (req: Request, res: Response) => {
   try {
     const products: IProductDocument[] = await Product.find();
-    res.status(200).json(products);
+    res.status(200).json({
+      items: products,
+      total: products.length,
+    });
   } catch (error) {
     console.error('Error fetching products:', error);
     res.status(500).json({ message: 'Internal server error' });
