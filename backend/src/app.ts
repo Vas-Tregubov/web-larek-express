@@ -5,6 +5,7 @@ import path from 'path';
 import connectDB from './config/db';
 import productRoutes from './routes/product';
 import orderRoutes from './routes/order';
+import errorHandler from './middlewares/errorHandler';
 
 dotenv.config();
 
@@ -29,5 +30,7 @@ connectDB().catch((error) => {
 
 app.use('/product', productRoutes);
 app.use('/order', orderRoutes);
+
+app.use(errorHandler);
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

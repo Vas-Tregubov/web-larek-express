@@ -1,8 +1,14 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import Product, { IProductDocument } from '../models/Product';
 import { IProduct } from '../types/product';
+import BadRequestError from '../errors/BadRequestError';
+import ConflictError from '../errors/ConflictError';
 
-export const getAllProducts = async (req: Request, res: Response) => {
+export const getAllProducts = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const products: IProductDocument[] = await Product.find();
     res.status(200).json({
@@ -10,18 +16,29 @@ export const getAllProducts = async (req: Request, res: Response) => {
       total: products.length,
     });
   } catch (error) {
-    console.error('Error fetching products:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    next(error);
   }
 };
 
-export const createProduct = async (req: Request, res: Response) => {
+export const createProduct = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const productData: IProduct = req.body;
     const newProduct: IProductDocument = await Product.create(productData);
     res.status(201).json(newProduct);
-  } catch (error) {
-    console.error('Error creating product:', error);
-    res.status(400).json({ message: 'Failed to create product', error });
+  } catch (error: any) {
+    // Ошибка уникального поля
+    if (error.code === 11000) {
+      return next(new ConflictError('Product title already exists'));
+    }
+    // Ошибка валидации mongoose
+    if (error.name === 'ValidationError') {
+      return next(new BadRequestError(error.message));
+    }
+    // Любая другая ошибка
+    next(error);
   }
 };

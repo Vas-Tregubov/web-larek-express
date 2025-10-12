@@ -1,11 +1,13 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { faker } from '@faker-js/faker';
 import { IOrderRequestBody } from '../types/order';
 import Product from '../models/Product';
+import BadRequestError from '../errors/BadRequestError';
 
 export const createOrder = async (
   req: Request<{}, {}, IOrderRequestBody>,
   res: Response,
+  next: NextFunction,
 ) => {
   try {
     const {
@@ -14,25 +16,23 @@ export const createOrder = async (
 
     // Проверяем наличие обязательных полей
     if (!payment || !email || !phone || !address || !total || !items?.length) {
-      return res.status(400).json({ message: 'Missing required fields' });
+      return next(new BadRequestError('Missing required fields'));
     }
 
     // Проверяем корректный выбор платежного способа
     if (!['card', 'online'].includes(payment)) {
-      return res.status(400).json({ message: 'Invalid payment method' });
+      return next(new BadRequestError('Invalid payment method'));
     }
 
     // Проверяем, что все товары существуют и у них есть цена
     const products = await Product.find({ _id: { $in: items } });
     if (products.length !== items.length) {
-      return res
-        .status(400)
-        .json({ message: 'One or more products not found' });
+      return next(new BadRequestError('Invalid product IDs'));
     }
 
     const totalFromDB = products.reduce((sum, p) => sum + (p.price ?? 0), 0);
     if (totalFromDB !== total) {
-      return res.status(400).json({ message: 'Invalid total amount' });
+      return next(new BadRequestError('Invalid total'));
     }
 
     // Генерируем ID заказа
@@ -43,7 +43,6 @@ export const createOrder = async (
       total,
     });
   } catch (error) {
-    console.error('Error creating order:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    next(error);
   }
 };
