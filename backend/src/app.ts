@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import connectDB from './config/db';
 import productRoutes from './routes/product';
+import orderRoutes from './routes/order';
 
 dotenv.config();
 
@@ -27,5 +28,6 @@ connectDB().catch((error) => {
 });
 
 app.use('/product', productRoutes);
+app.use('/order', orderRoutes);
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
