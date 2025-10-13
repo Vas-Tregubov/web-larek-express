@@ -28,9 +28,11 @@
   },
   "dependencies": {
     "@faker-js/faker": "^9.9.0",
+    "celebrate": "^15.0.3",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^4.19.2",
+    "joi": "^18.0.1",
     "mongoose": "^8.3.2",
     "validator": "^13.11.0"
   }

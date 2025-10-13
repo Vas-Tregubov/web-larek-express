@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+import { errors as celebrateErrors } from 'celebrate';
 import connectDB from './config/db';
 import productRoutes from './routes/product';
 import orderRoutes from './routes/order';
@@ -30,6 +31,8 @@ connectDB().catch((error) => {
 
 app.use('/product', productRoutes);
 app.use('/order', orderRoutes);
+
+app.use(celebrateErrors());
 
 app.use(errorHandler);
 
