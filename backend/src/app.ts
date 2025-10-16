@@ -1,20 +1,22 @@
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import path from 'path';
-import { errors as celebrateErrors } from 'celebrate';
-import connectDB from './config/db';
-import productRoutes from './routes/product';
-import orderRoutes from './routes/order';
-import errorHandler from './middlewares/errorHandler';
-import { requestLogger, errorLogger } from './middlewares/logger';
+import express from "express";
+import cors from "cors";
 
+import dotenv from "dotenv";
 dotenv.config();
+
+import path from "path";
+import { errors as celebrateErrors } from "celebrate";
+import connectDB from "./config/db";
+import productRoutes from "./routes/product";
+import orderRoutes from "./routes/order";
+import authRoutes from "./routes/auth";
+import errorHandler from "./middlewares/errorHandler";
+import { requestLogger, errorLogger } from "./middlewares/logger";
 
 const app = express();
 
 const PORT = process.env.PORT || 3000;
-const ORIGIN_ALLOW = process.env.ORIGIN_ALLOW || '*';
+const ORIGIN_ALLOW = process.env.ORIGIN_ALLOW || "*";
 
 app.use(
   cors({
@@ -23,17 +25,18 @@ app.use(
 );
 app.use(express.json());
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 
 connectDB().catch((error) => {
-  console.error('MongoDB connection failed:', error);
+  console.error("MongoDB connection failed:", error);
   process.exit(1);
 });
 
 app.use(requestLogger);
 
-app.use('/product', productRoutes);
-app.use('/order', orderRoutes);
+app.use("/product", productRoutes);
+app.use("/order", orderRoutes);
+app.use("/auth", authRoutes);
 
 app.use(errorLogger);
 app.use(celebrateErrors());
