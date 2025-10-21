@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-
+import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -21,9 +21,11 @@ const ORIGIN_ALLOW = process.env.ORIGIN_ALLOW || "*";
 app.use(
   cors({
     origin: ORIGIN_ALLOW,
+    credentials: true,
   }),
 );
 app.use(express.json());
+app.use(cookieParser());
 
 app.use(express.static(path.join(__dirname, "public")));
 
