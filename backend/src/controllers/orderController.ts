@@ -16,23 +16,23 @@ export const createOrder = async (
 
     // Проверяем наличие обязательных полей
     if (!payment || !email || !phone || !address || !total || !items?.length) {
-      return next(new BadRequestError('Missing required fields'));
+      return next(new BadRequestError('Не все обязательные поля заполнены'));
     }
 
     // Проверяем корректный выбор платежного способа
     if (!['card', 'online'].includes(payment)) {
-      return next(new BadRequestError('Invalid payment method'));
+      return next(new BadRequestError('Неверный способ оплаты'));
     }
 
     // Проверяем, что все товары существуют и у них есть цена
     const products = await Product.find({ _id: { $in: items } });
     if (products.length !== items.length) {
-      return next(new BadRequestError('Invalid product IDs'));
+      return next(new BadRequestError(`Товар с id ${items[0]} не найден`));
     }
 
     const totalFromDB = products.reduce((sum, p) => sum + (p.price ?? 0), 0);
     if (totalFromDB !== total) {
-      return next(new BadRequestError('Invalid total'));
+      return next(new BadRequestError('Неверная сумма заказа'));
     }
 
     // Генерируем ID заказа
