@@ -1,8 +1,13 @@
 import multer from "multer";
 import path from "path";
+import fs from "fs";
 import { Request } from "express";
 
 const tempDir = path.join(__dirname, "../../tmp");
+
+if (!fs.existsSync(tempDir)) {
+  fs.mkdirSync(tempDir, { recursive: true });
+}
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {

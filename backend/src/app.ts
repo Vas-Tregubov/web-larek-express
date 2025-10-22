@@ -10,6 +10,7 @@ import connectDB from "./config/db";
 import productRoutes from "./routes/product";
 import orderRoutes from "./routes/order";
 import authRoutes from "./routes/auth";
+import uploadRoutes from "./routes/upload";
 import errorHandler from "./middlewares/errorHandler";
 import { requestLogger, errorLogger } from "./middlewares/logger";
 
@@ -39,6 +40,7 @@ app.use(requestLogger);
 app.use("/product", productRoutes);
 app.use("/order", orderRoutes);
 app.use("/auth", authRoutes);
+app.use("/upload", uploadRoutes);
 
 app.use(errorLogger);
 app.use(celebrateErrors());
